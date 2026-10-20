@@ -1,16 +1,11 @@
 package com.lizongying.mytv0
 
 import MainViewModel
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
@@ -18,7 +13,6 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.lizongying.mytv0.databinding.SettingBinding
-import kotlin.math.max
 import kotlin.math.min
 
 
@@ -26,10 +20,6 @@ class SettingFragment : Fragment() {
 
     private var _binding: SettingBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var uri: Uri
-
-    private lateinit var updateManager: UpdateManager
 
     private var server = ""
 
@@ -127,32 +117,8 @@ class SettingFragment : Fragment() {
             mainActivity.settingActive()
         }
 
-        binding.checkVersion.setOnClickListener {
-            requestInstallPermissions()
-            mainActivity.settingActive()
-        }
-
-        binding.confirmConfig.setOnClickListener {
-            confirmConfig()
-        }
-
-        binding.appreciate.setOnClickListener {
-            val imageModalFragment = ModalFragment()
-
-            val args = Bundle()
-            args.putInt(ModalFragment.KEY_DRAWABLE_ID, R.drawable.appreciate)
-            imageModalFragment.arguments = args
-
-            imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)
-            mainActivity.settingActive()
-        }
-
         binding.setting.setOnClickListener {
             hideSelf()
-        }
-
-        binding.exit.setOnClickListener {
-            requireActivity().finishAffinity()
         }
 
         val txtTextSize =
@@ -175,53 +141,44 @@ class SettingFragment : Fragment() {
         binding.version.layoutParams = layoutParamsVersion
 
         val btnWidth =
-            application.px2Px(binding.confirmConfig.layoutParams.width)
+            application.px2Px(binding.qrcode.layoutParams.width)
 
         val btnLayoutParams =
-            binding.confirmConfig.layoutParams as ViewGroup.MarginLayoutParams
-        btnLayoutParams.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
+            binding.qrcode.layoutParams as ViewGroup.MarginLayoutParams
+        btnLayoutParams.marginEnd = application.px2Px(binding.qrcode.marginEnd)
 
         binding.versionName.textSize = txtTextSize
 
-        for (i in listOf(
-            binding.qrcode,
-            binding.confirmConfig,
-            binding.clear,
-            binding.checkVersion,
-            binding.exit,
-            binding.appreciate,
-        )) {
-            i.layoutParams.width = btnWidth
-            i.textSize = txtTextSize
-            i.layoutParams = btnLayoutParams
-            i.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    i.background = ColorDrawable(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.focus
-                        )
+        binding.qrcode.layoutParams.width = btnWidth
+        binding.qrcode.textSize = txtTextSize
+        binding.qrcode.layoutParams = btnLayoutParams
+        binding.qrcode.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.qrcode.background = ColorDrawable(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.focus
                     )
-                    i.setTextColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.white
-                        )
+                )
+                binding.qrcode.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.white
                     )
-                } else {
-                    i.background = ColorDrawable(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.description_blur
-                        )
+                )
+            } else {
+                binding.qrcode.background = ColorDrawable(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.description_blur
                     )
-                    i.setTextColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.blur
-                        )
+                )
+                binding.qrcode.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.blur
                     )
-                }
+                )
             }
         }
 
@@ -265,8 +222,6 @@ class SettingFragment : Fragment() {
             }
         }
 
-        updateManager = UpdateManager(context, context.appVersionCode)
-
         return binding.root
     }
 
@@ -280,83 +235,12 @@ class SettingFragment : Fragment() {
             viewModel.setDisplaySeconds(isChecked)
         }
 
-        binding.clear.setOnClickListener {
-            SP.positionGroup = SP.DEFAULT_POSITION_GROUP
-            viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
-            viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
-
-            SP.position = SP.DEFAULT_POSITION
-            val tvListModel = viewModel.groupModel.getCurrentList()
-            tvListModel?.setPosition(SP.DEFAULT_POSITION)
-            tvListModel?.setPositionPlaying(SP.DEFAULT_POSITION)
-
-            SP.config = null
-            SP.channelListJson = ""
-            context.deleteFile(viewModel.FILE_NAME)
-            mainActivity.playFirstOnNextChannelLoad()
-            viewModel.reset(context)
-
-            SP.channel = SP.DEFAULT_CHANNEL
-            confirmChannel()
-
-            SP.deleteLike()
-            SP.position = 0
-            val tvModel = viewModel.groupModel.getPosition(0)
-            tvModel?.setReady()
-            viewModel.groupModel.setPlaying()
-            viewModel.groupModel.getCurrentList()?.setPlaying()
-            SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
-            SP.compactMenu = SP.DEFAULT_COMPACT_MENU
-
-            viewModel.setDisplaySeconds(SP.DEFAULT_DISPLAY_SECONDS)
-
-            SP.epg = SP.DEFAULT_EPG
-            viewModel.updateEPG()
-
-            R.string.config_restored.showToast()
-        }
-
         binding.switchShowAllChannels.setOnCheckedChangeListener { _, isChecked ->
             SP.showAllChannels = isChecked
             viewModel.groupModel.tvGroup.value?.let { viewModel.groupModel.setTVListModelList(it) }
             mainActivity.update()
             mainActivity.settingActive()
         }
-    }
-
-    private fun confirmConfig() {
-        if (SP.config == null) {
-            return
-        }
-
-        var url = SP.config!!
-        if (url.isBlank()) {
-            R.string.invalid_config_address.showToast()
-            return
-        }
-        url = Utils.formatUrl(url)
-        uri = Uri.parse(url)
-        if (uri.scheme == "") {
-            uri = uri.buildUpon().scheme("http").build()
-        }
-        if (uri.isAbsolute) {
-            if (uri.scheme == "file") {
-                requestReadPermissions()
-            } else {
-                (activity as MainActivity).playFirstOnNextChannelLoad()
-                viewModel.parseUri(uri)
-            }
-        } else {
-            R.string.invalid_config_address.showToast()
-        }
-        (activity as MainActivity).settingActive()
-    }
-
-    private fun confirmChannel() {
-        SP.channel =
-            min(max(SP.channel, 0), viewModel.groupModel.getAllList()!!.size())
-
-        (activity as MainActivity).settingActive()
     }
 
     fun setServer(server: String) {
@@ -376,98 +260,6 @@ class SettingFragment : Fragment() {
         }
     }
 
-    private fun requestInstallPermissions() {
-        val context = requireContext()
-        val permissionsList: MutableList<String> = ArrayList()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !context.packageManager.canRequestPackageInstalls()) {
-            permissionsList.add(Manifest.permission.REQUEST_INSTALL_PACKAGES)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-
-        if (permissionsList.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                permissionsList.toTypedArray<String>(),
-                PERMISSIONS_REQUEST_CODE
-            )
-        } else {
-            updateManager.checkAndUpdate()
-        }
-    }
-
-    private fun requestReadPermissions() {
-        val context = requireContext()
-        val permissionsList: MutableList<String> = ArrayList()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (permissionsList.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                permissionsList.toTypedArray<String>(),
-                PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE
-            )
-        } else {
-            (activity as MainActivity).playFirstOnNextChannelLoad()
-            viewModel.parseUri(uri)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                (activity as MainActivity).playFirstOnNextChannelLoad()
-                viewModel.parseUri(uri)
-            } else {
-                R.string.authorization_failed.showToast()
-            }
-        }
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            var allPermissionsGranted = true
-            for (result in grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allPermissionsGranted = false
-                    break
-                }
-            }
-            if (allPermissionsGranted) {
-                updateManager.checkAndUpdate()
-            } else {
-                R.string.authorization_failed.showToast()
-            }
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -475,7 +267,5 @@ class SettingFragment : Fragment() {
 
     companion object {
         const val TAG = "SettingFragment"
-        const val PERMISSIONS_REQUEST_CODE = 1
-        const val PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE = 2
     }
 }

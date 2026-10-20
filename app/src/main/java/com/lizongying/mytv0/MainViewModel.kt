@@ -78,19 +78,16 @@ class MainViewModel : ViewModel() {
         if (SP.channelListJson.isNullOrEmpty()) {
             appDirectory = context.filesDir
             val file = File(appDirectory, FILE_NAME)
-            val str = if (file.exists()) {
-                file.readText()
-            } else {
-                context.resources.openRawResource(R.raw.channels).bufferedReader()
-                    .use { it.readText() }
-            }
 
-            try {
-                str2List(str)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                file.deleteOnExit()
-                R.string.channel_read_error.showToast()
+            // 不再内置默认视频源：无本地缓存时保持空频道列表，等待用户自行添加视频源
+            if (file.exists()) {
+                try {
+                    str2List(file.readText())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    file.deleteOnExit()
+                    R.string.channel_read_error.showToast()
+                }
             }
         } else {
             Gson().fromJson<List<TV>?>(
@@ -165,18 +162,6 @@ class MainViewModel : ViewModel() {
             e.printStackTrace()
             Log.e(TAG, "Request error $e")
             R.string.channel_request_error.showToast()
-        }
-    }
-
-    fun reset(context: Context) {
-        val str = context.resources.openRawResource(R.raw.channels).bufferedReader()
-            .use { it.readText() }
-
-        try {
-            str2List(str)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            R.string.channel_read_error.showToast()
         }
     }
 

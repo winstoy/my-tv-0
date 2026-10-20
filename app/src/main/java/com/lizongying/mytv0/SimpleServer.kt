@@ -82,11 +82,14 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
+                    // 新增视频源后默认选中该源，并播放其首个频道
+                    (context as MainActivity).playFirstOnNextChannelLoad()
                     if (viewModel.str2List(it)) {
                         File(context.filesDir, viewModel.FILE_NAME).writeText(it)
                         SP.config = "file://"
                         R.string.channel_import_success.showToast()
                     } else {
+                        (context as MainActivity).cancelPlayFirstOnNextChannelLoad()
                         R.string.channel_import_error.showToast()
                     }
                 }
@@ -113,6 +116,8 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                     val uri = Uri.parse(url)
                     Log.i(TAG, "uri $uri")
                     handler.post {
+                        // 新增视频源后默认选中该源，并播放其首个频道
+                        (context as MainActivity).playFirstOnNextChannelLoad()
                         viewModel.parseUri(uri)
                     }
                 }

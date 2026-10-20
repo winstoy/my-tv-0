@@ -49,7 +49,6 @@ object SP {
 
     private const val KEY_LOG_TIMES = "log_times"
 
-    const val DEFAULT_CONFIG_URL = "https://cdn.jsdelivr.net/gh/develop202/migu_video@main/interface.txt"
     const val DEFAULT_EPG = ""
     const val DEFAULT_CHANNEL = 0
     const val DEFAULT_SHOW_ALL_CHANNELS = false
@@ -106,7 +105,7 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY_REPEAT_INFO, value).apply()
 
     var config: String?
-        get() = sp.getString(KEY_CONFIG, DEFAULT_CONFIG_URL)
+        get() = sp.getString(KEY_CONFIG, "")
         set(value) = sp.edit().putString(KEY_CONFIG, value).apply()
 
     var configAutoLoad: Boolean

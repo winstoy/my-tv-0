@@ -166,6 +166,14 @@ class MainActivity : AppCompatActivity() {
 
             viewModel.channelsOk.observe(this) { it ->
                 if (it) {
+                    if (viewModel.listModel.isEmpty()) {
+                        Log.i(TAG, "no channel source")
+                        hideFragment(loadingFragment)
+                        errorFragment.setMsg(getString(R.string.no_channel_source))
+                        showFragment(errorFragment)
+                        return@observe
+                    }
+
                     val prevGroup = viewModel.groupModel.positionValue
                     Log.i(TAG, "SP.channel ${SP.channel}")
                     val tvModel = if (SP.defaultLike &&
@@ -410,8 +418,13 @@ class MainActivity : AppCompatActivity() {
         playFirstOnNextChannelLoad = true
     }
 
+    fun cancelPlayFirstOnNextChannelLoad() {
+        playFirstOnNextChannelLoad = false
+    }
+
+    // 新增视频源后默认选中并播放该源的首个频道
     fun playFirstAfterChannelLoad() {
-        val list = getPlaybackLoopList() ?: return
+        val list = viewModel.groupModel.getAllList() ?: return
         val tvModel = list.getTVModel(0) ?: return
         playFromList(list, tvModel)
     }

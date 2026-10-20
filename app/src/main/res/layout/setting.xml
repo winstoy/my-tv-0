@@ -73,63 +73,6 @@
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/server" />
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/confirm_config"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@color/description_blur"
-                android:textColor="@color/blur"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/channels" />
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/clear"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@color/description_blur"
-                android:textColor="@color/blur"
-                android:layout_marginEnd="5dp"
-                android:text="@string/clear"
-                android:textSize="14sp"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            >
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/check_version"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@color/description_blur"
-                android:textColor="@color/blur"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/check_version"
-                />
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/exit"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@color/description_blur"
-                android:textColor="@color/blur"
-                android:layout_marginEnd="5dp"
-                android:text="@string/exit"
-                android:textSize="14sp"
-                />
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/appreciate"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@color/description_blur"
-                android:textColor="@color/blur"
-                android:layout_marginEnd="5dp"
-                android:text="@string/appreciate"
-                android:textSize="14sp"
-                />
         </LinearLayout>
 
         <androidx.appcompat.widget.SwitchCompat

@@ -80,14 +80,6 @@ class TVModel(var tv: TV) : ViewModel() {
         return tv.uris[index]
     }
 
-    private val _like = MutableLiveData<Boolean>()
-    val like: LiveData<Boolean>
-        get() = _like
-
-    fun setLike(liked: Boolean) {
-        _like.value = liked
-    }
-
     private val _ready = MutableLiveData<Boolean>()
     val ready: LiveData<Boolean>
         get() = _ready
@@ -141,7 +133,6 @@ class TVModel(var tv: TV) : ViewModel() {
     init {
         _position.value = 0
         _videoIndex.value = max(0, tv.uris.size - 1)
-        _like.value = SP.getLike(tv.id)
         _program.value = mutableListOf()
 
         buildSource()

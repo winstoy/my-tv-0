@@ -9,7 +9,6 @@
     <string name="title_config_auto_load">Auto Update Video Source on App Startup</string>
     <string name="default_channel">Default Channel Number</string>
     <string name="server">Remote Configuration</string>
-    <string name="title_default_like">Enter My Favorites on App Startup</string>
     <string name="proxy">Network Proxy</string>
     <string name="epg_status_err">EPG status error</string>
     <string name="epg_request_err">EPG request error</string>
@@ -26,8 +25,6 @@
     <string name="play_last_channel">Play last channel</string>
     <string name="default_channel_out_of_range">Default channel out of range, automatically set to 0</string>
     <string name="last_channel_out_of_range">Last channel out of range, automatically set to 0</string>
-    <string name="favorite_mode">Favorite Mode</string>
-    <string name="standard_mode">Standard Mode</string>
     <string name="press_again_to_exit">Press again to exit</string>
     <string name="default_channel_set_success">Default channel set successfully</string>
     <string name="default_channel_set_failure">Failed to set default channel</string>

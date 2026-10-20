@@ -72,47 +72,8 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
         _tvList.value = newList
     }
 
-    fun removeTVModel(id: Int) {
-        if (_tvList.value == null) {
-            return
-        }
-        val newList = _tvList.value!!.toMutableList()
-        val iterator = newList.iterator()
-        while (iterator.hasNext()) {
-            if (iterator.next().tv.id == id) {
-                iterator.remove()
-            }
-        }
-        _tvList.value = newList
-    }
-
-    fun replaceTVModel(tvModel: TVModel) {
-        if (_tvList.value == null) {
-            _tvList.value = mutableListOf(tvModel)
-            return
-        }
-
-        val newList = _tvList.value!!.toMutableList()
-        var exists = false
-        val iterator = newList.iterator()
-        while (iterator.hasNext()) {
-            if (iterator.next().tv.id == tvModel.tv.id) {
-                exists = true
-            }
-        }
-        if (!exists) {
-            newList.add(tvModel)
-            _tvList.value = newList
-        }
-    }
-
     fun initTVList() {
         _tvList.value = mutableListOf()
-    }
-    //API19-: clear() in ViewModel must rename!
-    fun clear2() {
-        initTVList()
-        setPosition(0)
     }
 
     fun getTVModel(): TVModel? {

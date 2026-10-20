@@ -72,8 +72,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun init(context: Context) {
-        groupModel.addTVListModel(TVListModel("我的收藏", 0))
-        groupModel.addTVListModel(TVListModel("全部频道", 1))
+        groupModel.addTVListModel(TVListModel("全部频道", 0))
 
         if (SP.channelListJson.isNullOrEmpty()) {
             appDirectory = context.filesDir
@@ -359,13 +358,12 @@ class MainViewModel : ViewModel() {
         }
 
         val listModelNew: MutableList<TVModel> = mutableListOf()
-        var groupIndex = 2
+        var groupIndex = 1
         var id = 0
         for ((k, v) in map) {
             val listTVModel = TVListModel(k, groupIndex)
             for ((listIndex, v1) in v.withIndex()) {
                 v1.tv.id = id
-                v1.setLike(SP.getLike(id))
                 v1.setGroupIndex(groupIndex)
                 v1.listIndex = listIndex
                 listTVModel.addTVModel(v1)
@@ -379,7 +377,7 @@ class MainViewModel : ViewModel() {
         listModel = listModelNew
 
         // 全部频道
-        (groupModel.tvGroup.value as List<TVListModel>)[1].setTVListModel(listModel)
+        (groupModel.tvGroup.value as List<TVListModel>)[0].setTVListModel(listModel)
 
         groupModel.setChange()
     }

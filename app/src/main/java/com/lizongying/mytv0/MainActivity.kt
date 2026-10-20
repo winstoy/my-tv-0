@@ -143,13 +143,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-//            if (SP.defaultLike) {
-//                TVList.groupModel.setPosition(0)
-//                val tvModel = TVList.listModel.find { it.like.value as Boolean }
-//                TVList.setPosition(tvModel?.tv?.id ?: 0)
-//                "播放收藏频道".showToast()
-//            }
-
             viewModel.channelsOk.observe(this) { it ->
                 if (it) {
                     if (viewModel.listModel.isEmpty()) {
@@ -161,12 +154,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     Log.i(TAG, "SP.channel ${SP.channel}")
-                    val tvModel = if (SP.defaultLike &&
-                        (viewModel.groupModel.getFavoritesList()?.size() ?: 0) > 0
-                    ) {
-                        viewModel.groupModel.setPosition(0)
-                        viewModel.groupModel.getFavoritesList()?.getTVModel(0)
-                    } else if (SP.channel > 0) {
+                    val tvModel = if (SP.channel > 0) {
                         val position = if (SP.channel < viewModel.listModel.size) {
                             // R.string.play_default_channel.showToast()
                             SP.channel - 1
@@ -196,14 +184,6 @@ class MainActivity : AppCompatActivity() {
                             Log.i(TAG, "list name ${it.getName()}")
                             it.setPlaying()
                         }
-
-                    viewModel.groupModel.isInLikeMode =
-                        SP.defaultLike && viewModel.groupModel.positionValue == 0
-                    if (viewModel.groupModel.isInLikeMode) {
-//                R.string.favorite_mode.showToast()
-                    } else {
-//                R.string.standard_mode.showToast()
-                    }
 
                     // TODO group position
                     viewModel.updateEPG()
@@ -258,18 +238,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            tvModel.like.observe(this) { _ ->
-                if (tvModel.like.value != null && tvModel.tv.id != -1) {
-                    val liked = tvModel.like.value as Boolean
-                    if (liked) {
-                        viewModel.groupModel.getFavoritesList()?.replaceTVModel(tvModel)
-                    } else {
-                        viewModel.groupModel.getFavoritesList()
-                            ?.removeTVModel(tvModel.tv.id)
-                    }
-                    SP.setLike(tvModel.tv.id, liked)
-                }
-            }
         }
     }
 
@@ -404,12 +372,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPlaybackLoopList(): com.lizongying.mytv0.models.TVListModel? {
-        val favorites = viewModel.groupModel.getFavoritesList()
-        return if (SP.defaultLike && favorites != null && favorites.size() > 0) {
-            favorites
-        } else {
-            viewModel.groupModel.getAllList()
-        }
+        return viewModel.groupModel.getAllList()
     }
 
     private fun playFromList(
@@ -420,9 +383,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.groupModel.setPlaying()
         list.setPlaying()
         tvModel.setReady()
-
-        viewModel.groupModel.isInLikeMode =
-            SP.defaultLike && viewModel.groupModel.positionValue == 0
     }
 
     fun play(position: Int) {
@@ -438,13 +398,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun prev() {
-        val tvModel =
-            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getFavoritesList() != null
-            ) {
-                viewModel.groupModel.getPrev(true)
-            } else {
-                viewModel.groupModel.getPrev()
-            }
+        val tvModel = viewModel.groupModel.getPrev()
 
         tvModel?.setReady()
         viewModel.groupModel.setPlaying()
@@ -452,13 +406,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun next() {
-        val tvModel =
-            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getFavoritesList() != null
-            ) {
-                viewModel.groupModel.getNext(true)
-            } else {
-                viewModel.groupModel.getNext()
-            }
+        val tvModel = viewModel.groupModel.getNext()
 
         tvModel?.setReady()
         viewModel.groupModel.setPlaying()

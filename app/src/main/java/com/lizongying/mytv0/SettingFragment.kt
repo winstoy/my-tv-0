@@ -81,13 +81,6 @@ class SettingFragment : Fragment() {
             mainActivity.settingActive()
         }
 
-        val switchDefaultLike = _binding?.switchDefaultLike
-        switchDefaultLike?.isChecked = SP.defaultLike
-        switchDefaultLike?.setOnCheckedChangeListener { _, isChecked ->
-            SP.defaultLike = isChecked
-            mainActivity.settingActive()
-        }
-
         val switchDisplaySeconds = _binding?.switchDisplaySeconds
         switchDisplaySeconds?.isChecked = SP.displaySeconds
 
@@ -185,7 +178,6 @@ class SettingFragment : Fragment() {
             binding.switchBootStartup,
             binding.switchRepeatInfo,
             binding.switchConfigAutoLoad,
-            binding.switchDefaultLike,
             binding.switchDisplaySeconds,
         )) {
             i.textSize = textSizeSwitch

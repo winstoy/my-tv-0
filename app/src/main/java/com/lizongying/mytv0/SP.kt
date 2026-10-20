@@ -31,14 +31,9 @@ object SP {
 
     private const val KEY_CHANNEL = "channel"
 
-    private const val KEY_DEFAULT_LIKE = "default_like"
-
     private const val KEY_DISPLAY_SECONDS = "display_seconds"
 
     private const val KEY_SHOW_ALL_CHANNELS = "show_all_channels"
-
-
-    private const val KEY_LIKE = "like"
 
     private const val KEY_PROXY = "proxy"
 
@@ -118,33 +113,9 @@ object SP {
         get() = sp.getBoolean(KEY_SHOW_ALL_CHANNELS, DEFAULT_SHOW_ALL_CHANNELS)
         set(value) = sp.edit().putBoolean(KEY_SHOW_ALL_CHANNELS, value).apply()
 
-    var defaultLike: Boolean
-        get() = sp.getBoolean(KEY_DEFAULT_LIKE, false)
-        set(value) = sp.edit().putBoolean(KEY_DEFAULT_LIKE, value).apply()
-
     var displaySeconds: Boolean
         get() = sp.getBoolean(KEY_DISPLAY_SECONDS, DEFAULT_DISPLAY_SECONDS)
         set(value) = sp.edit().putBoolean(KEY_DISPLAY_SECONDS, value).apply()
-
-    fun getLike(id: Int): Boolean {
-        val stringSet = sp.getStringSet(KEY_LIKE, emptySet())
-        return stringSet?.contains(id.toString()) ?: false
-    }
-
-    fun setLike(id: Int, liked: Boolean) {
-        val stringSet = sp.getStringSet(KEY_LIKE, emptySet())?.toMutableSet() ?: mutableSetOf()
-        if (liked) {
-            stringSet.add(id.toString())
-        } else {
-            stringSet.remove(id.toString())
-        }
-
-        sp.edit().putStringSet(KEY_LIKE, stringSet).apply()
-    }
-
-    fun deleteLike() {
-        sp.edit().remove(KEY_LIKE).apply()
-    }
 
     var proxy: String?
         get() = sp.getString(KEY_PROXY, "")

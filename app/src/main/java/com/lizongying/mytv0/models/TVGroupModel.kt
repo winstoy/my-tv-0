@@ -8,7 +8,6 @@ import com.lizongying.mytv0.ISP
 import com.lizongying.mytv0.SP
 
 class TVGroupModel : ViewModel() {
-    var isInLikeMode = false
     private val _tvGroup = MutableLiveData<List<TVListModel>>()
     val tvGroup: LiveData<List<TVListModel>>
         get() = _tvGroup
@@ -80,23 +79,8 @@ class TVGroupModel : ViewModel() {
     }
 
     fun initTVGroup() {
-        _tvGroup.value = mutableListOf(
-            (_tvGroup.value as List<TVListModel>)[0],
-            (_tvGroup.value as List<TVListModel>)[1]
-        )
-        (_tvGroup.value as List<TVListModel>)[1].initTVList()
-    }
-    //API19-: clear() in ViewModel must rename!
-    fun clear2() {
-        if (SP.showAllChannels) {
-            _tvGroup.value =
-                mutableListOf(getFavoritesList()!!, getAllList()!!)
-            setPosition(0)
-            getAllList()?.clear2()
-        } else {
-            _tvGroup.value = mutableListOf(getFavoritesList()!!)
-            setPosition(0)
-        }
+        _tvGroup.value = mutableListOf((_tvGroup.value as List<TVListModel>)[0])
+        (_tvGroup.value as List<TVListModel>)[0].initTVList()
     }
 
     fun getTVListModel(): TVListModel? {
@@ -125,7 +109,7 @@ class TVGroupModel : ViewModel() {
     fun getPosition(position: Int): TVModel? {
 
         // No item
-        if (tvGroupValue[1].size() == 0) {
+        if (tvGroupValue.isEmpty() || tvGroupValue[0].size() == 0) {
             return null
         }
 
@@ -147,7 +131,7 @@ class TVGroupModel : ViewModel() {
     fun getCurrent(): TVModel? {
 
         // No item
-        if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
+        if (tvGroupValue.isEmpty() || tvGroupValue[0].size() == 0) {
             return null
         }
 
@@ -158,39 +142,24 @@ class TVGroupModel : ViewModel() {
         return getTVListModelNotFilter(positionValue)
     }
 
-    fun getFavoritesList(): TVListModel? {
+    fun getAllList(): TVListModel? {
         return getTVListModelNotFilter(0)
     }
 
-    fun getAllList(): TVListModel? {
-        return getTVListModelNotFilter(1)
-    }
-
     // get & set
-    // keep: In the current list loop
-    fun getPrev(keep: Boolean = false): TVModel? {
-
-        Log.i(TAG, "keep $keep")
+    fun getPrev(): TVModel? {
 
         // No item
-        if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
+        if (tvGroupValue.isEmpty() || tvGroupValue[0].size() == 0) {
             return null
         }
 
         var tvListModel = getCurrentList()!!
-        if (keep) {
-            Log.i(TAG, "group position $positionValue")
-            return tvListModel.getPrev()
-        }
 
         // Prev tvListModel
         if (tvListModel.positionValue == 0) {
             var p = (tvGroupValue.size + positionValue - 1) % tvGroupValue.size
             setPosition(p)
-            if (p == 1) {
-                p = (tvGroupValue.size + positionValue - 1) % tvGroupValue.size
-                setPosition(p)
-            }
             if (p == 0) {
                 p = (tvGroupValue.size + positionValue - 1) % tvGroupValue.size
                 setPosition(p)
@@ -205,28 +174,20 @@ class TVGroupModel : ViewModel() {
     }
 
     // get & set
-    fun getNext(keep: Boolean = false): TVModel? {
-        Log.i(TAG, "keep $keep")
+    fun getNext(): TVModel? {
 
         // No item
-        if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
+        if (tvGroupValue.isEmpty() || tvGroupValue[0].size() == 0) {
             return null
         }
 
         var tvListModel = getCurrentList()!!
-        if (keep) {
-            return tvListModel.getNext()
-        }
 
         // Next tvListModel
         if (tvListModel.positionValue == tvListModel.size() - 1) {
             var p = (positionValue + 1) % tvGroupValue.size
             setPosition(p)
             if (p == 0) {
-                p = (tvGroupValue.size + positionValue + 1) % tvGroupValue.size
-                setPosition(p)
-            }
-            if (p == 1) {
                 p = (tvGroupValue.size + positionValue + 1) % tvGroupValue.size
                 setPosition(p)
             }
@@ -242,7 +203,6 @@ class TVGroupModel : ViewModel() {
     init {
         _position.value = SP.positionGroup
         Log.i(TAG, "SP.positionGroup ${SP.positionGroup}")
-        isInLikeMode = SP.defaultLike && _position.value == 0
     }
 
     fun size(): Int {

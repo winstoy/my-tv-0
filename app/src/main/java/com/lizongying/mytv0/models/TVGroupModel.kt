@@ -110,7 +110,7 @@ class TVGroupModel : ViewModel() {
         if (SP.showAllChannels) {
             return _tvGroup.value?.get(idx)
         }
-        return _tvGroup.value?.filter { it.getName() != "全部頻道" }?.get(idx)
+        return _tvGroup.value?.filter { it.getName() != "全部频道" }?.get(idx)
     }
 
     fun getTVListModelNotFilter(idx: Int): TVListModel? {
@@ -252,7 +252,7 @@ class TVGroupModel : ViewModel() {
         if (SP.showAllChannels) {
             return _tvGroup.value!!.size
         }
-        return _tvGroup.value!!.filter { it.getName() != "全部頻道" }.size
+        return _tvGroup.value!!.filter { it.getName() != "全部频道" }.size
     }
 
     companion object {

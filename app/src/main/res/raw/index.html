@@ -60,24 +60,24 @@
 <hr/>
 
 <div class="item">
-    <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
+<label for="uri" id="uri-label">视频源地址，点击确认后保存</label>
     <input type="text" id="uri"/>
-    <input type="button" id="confirm-uri" value="確認" class="confirm"/>
+    <input type="button" id="confirm-uri" value="确认" class="confirm"/>
 </div>
 
 <hr/>
 
 <div class="item">
-    <label for="upload-file" id="upload-file-label">選擇視頻文件後會自動保存上傳</label>
+    <label for="upload-file" id="upload-file-label">选择视频文件后会自动保存上传</label>
     <input type="file" id="upload-file" multiple/>
 </div>
 
 <hr/>
 
 <div class="item">
-    <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表沒有設置</label>
+    <label for="channel" id="channel-label">默认播放频道号，从1开始。0代表没有设置</label>
     <input type="text" id="channel"/>
-    <input type="button" id="confirm-channel" value="確認" class="confirm"/>
+    <input type="button" id="confirm-channel" value="确认" class="confirm"/>
 </div>
 
 <hr/>
@@ -85,7 +85,7 @@
 <div class="item">
     <label for="proxy" id="epg-label">EPG</label>
     <input type="text" id="epg"/>
-    <input type="button" id="confirm-epg" value="確認" class="confirm"/>
+    <input type="button" id="confirm-epg" value="确认" class="confirm"/>
 </div>
 
 <hr/>
@@ -93,22 +93,13 @@
 <div class="item">
     <label for="proxy" id="proxy-label">代理地址</label>
     <input type="text" id="proxy"/>
-    <input type="button" id="confirm-proxy" value="確認" class="confirm"/>
+    <input type="button" id="confirm-proxy" value="确认" class="confirm"/>
 </div>
 
 <hr/>
 </body>
 <script>
-    const lang = {
-        TRADITIONAL_CHINESE: {
-            appName: '我的电视•亲情版',
-            uriLabel: '視頻源地址',
-            uploadFileLabel: '選擇視頻源文件後會自動上傳保存',
-            channelLabel: '默認播放頻道，從1開始',
-            epgLabel: 'EPG',
-            proxyLabel: '代理地址',
-            confirm: '確認',
-        },
+const lang = {
         SIMPLIFIED_CHINESE: {
             appName: '我的电视•亲情版',
             uriLabel: '视频源地址',
@@ -119,7 +110,7 @@
             confirm: '确认',
         }
     };
-    const t = (key) => lang['TRADITIONAL_CHINESE'][key];
+    const t = (key) => lang['SIMPLIFIED_CHINESE'][key];
     document.querySelector('title').innerText = t('appName');
     document.querySelector('h1').innerText = t('appName');
     document.querySelector('title').innerText = t('appName');

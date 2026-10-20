@@ -104,7 +104,7 @@ class MyTVApplication : MultiDexApplication() {
     override fun attachBaseContext(base: Context) {
         //Locale.SIMPLIFIED_CHINESE
         //Locale.TRADITIONAL_CHINESE
-        val locale = Locale.TRADITIONAL_CHINESE
+        val locale = Locale.SIMPLIFIED_CHINESE
         val context = LocaleContextWrapper.wrap(base, locale)
         super.attachBaseContext(context)
     }

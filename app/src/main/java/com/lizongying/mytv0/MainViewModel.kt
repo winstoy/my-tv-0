@@ -73,7 +73,7 @@ class MainViewModel : ViewModel() {
 
     fun init(context: Context) {
         groupModel.addTVListModel(TVListModel("我的收藏", 0))
-        groupModel.addTVListModel(TVListModel("全部頻道", 1))
+        groupModel.addTVListModel(TVListModel("全部频道", 1))
 
         if (SP.channelListJson.isNullOrEmpty()) {
             appDirectory = context.filesDir

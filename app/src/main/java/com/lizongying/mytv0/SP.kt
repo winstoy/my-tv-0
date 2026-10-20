@@ -37,7 +37,6 @@ object SP {
 
     private const val KEY_SHOW_ALL_CHANNELS = "show_all_channels"
 
-    private const val KEY_COMPACT_MENU = "compact_menu"
 
     private const val KEY_LIKE = "like"
 
@@ -52,7 +51,6 @@ object SP {
     const val DEFAULT_EPG = ""
     const val DEFAULT_CHANNEL = 0
     const val DEFAULT_SHOW_ALL_CHANNELS = false
-    const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = false
     const val DEFAULT_LOG_TIMES = 10
     const val DEFAULT_POSITION_GROUP = 1
@@ -115,10 +113,6 @@ object SP {
     var channel: Int
         get() = sp.getInt(KEY_CHANNEL, DEFAULT_CHANNEL)
         set(value) = sp.edit().putInt(KEY_CHANNEL, value).apply()
-
-    var compactMenu: Boolean
-        get() = sp.getBoolean(KEY_COMPACT_MENU, DEFAULT_COMPACT_MENU)
-        set(value) = sp.edit().putBoolean(KEY_COMPACT_MENU, value).apply()
 
     var showAllChannels: Boolean
         get() = sp.getBoolean(KEY_SHOW_ALL_CHANNELS, DEFAULT_SHOW_ALL_CHANNELS)

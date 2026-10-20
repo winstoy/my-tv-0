@@ -33,11 +33,9 @@ class MainActivity : AppCompatActivity() {
     private var infoFragment = InfoFragment()
     private var channelFragment = ChannelFragment()
     private var timeFragment = TimeFragment()
-    private var menuFragment = MenuFragment()
     private var settingFragment = SettingFragment()
 
     private val handler = Handler(Looper.myLooper()!!)
-    private val delayHideMenu = 10 * 1000L
     private val delayHideSetting = 3 * 60 * 1000L
 
     private var doubleBackToExitPressedOnce = false
@@ -116,9 +114,7 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.main_browse_fragment, timeFragment)
                 .add(R.id.main_browse_fragment, infoFragment)
                 .add(R.id.main_browse_fragment, channelFragment)
-                .add(R.id.main_browse_fragment, menuFragment)
                 .add(R.id.main_browse_fragment, settingFragment)
-                .hide(menuFragment)
                 .hide(settingFragment)
                 .hide(errorFragment)
                 .hide(loadingFragment)
@@ -131,14 +127,6 @@ class MainActivity : AppCompatActivity() {
         showTime()
     }
 
-    fun update() {
-        menuFragment.update()
-    }
-
-    fun updateMenuSize() {
-        menuFragment.updateSize()
-    }
-
     fun ready(tag: String) {
         Log.i(TAG, "ready $tag")
         ok++
@@ -148,8 +136,6 @@ class MainActivity : AppCompatActivity() {
                 Log.i(TAG, "groupModel changed")
                 if (viewModel.groupModel.tvGroup.value != null) {
                     watch()
-                    Log.i(TAG, "menuFragment update")
-                    menuFragment.update()
                     if (playFirstOnNextChannelLoad) {
                         playFirstOnNextChannelLoad = false
                         playFirstAfterChannelLoad()
@@ -174,7 +160,6 @@ class MainActivity : AppCompatActivity() {
                         return@observe
                     }
 
-                    val prevGroup = viewModel.groupModel.positionValue
                     Log.i(TAG, "SP.channel ${SP.channel}")
                     val tvModel = if (SP.defaultLike &&
                         (viewModel.groupModel.getFavoritesList()?.size() ?: 0) > 0
@@ -211,12 +196,6 @@ class MainActivity : AppCompatActivity() {
                             Log.i(TAG, "list name ${it.getName()}")
                             it.setPlaying()
                         }
-
-                    val currentGroup = viewModel.groupModel.positionValue
-                    if (currentGroup != prevGroup) {
-                        Log.i(TAG, "group change")
-                        menuFragment.updateList(currentGroup)
-                    }
 
                     viewModel.groupModel.isInLikeMode =
                         SP.defaultLike && viewModel.groupModel.positionValue == 0
@@ -306,11 +285,6 @@ class MainActivity : AppCompatActivity() {
 
         private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            showFragment(menuFragment)
-            return true
-        }
-
         override fun onDoubleTap(e: MotionEvent): Boolean {
             showSetting()
             return true
@@ -330,12 +304,12 @@ class MainActivity : AppCompatActivity() {
                 && (e1?.x ?: 0f) < windowManager.defaultDisplay.width * 2 / 3
             ) {
                 if (velocityY > 0) {
-                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                    if (settingFragment.isHidden) {
                         prev()
                     }
                 }
                 if (velocityY < 0) {
-                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                    if (settingFragment.isHidden) {
                         next()
                     }
                 }
@@ -442,39 +416,28 @@ class MainActivity : AppCompatActivity() {
         list: com.lizongying.mytv0.models.TVListModel,
         tvModel: com.lizongying.mytv0.models.TVModel
     ) {
-        val prevGroup = viewModel.groupModel.positionValue
         viewModel.groupModel.setPosition(list.getGroupIndex())
         viewModel.groupModel.setPlaying()
         list.setPlaying()
         tvModel.setReady()
 
-        val currentGroup = viewModel.groupModel.positionValue
-        if (currentGroup != prevGroup) {
-            menuFragment.updateList(currentGroup)
-        }
-        viewModel.groupModel.isInLikeMode = SP.defaultLike && currentGroup == 0
+        viewModel.groupModel.isInLikeMode =
+            SP.defaultLike && viewModel.groupModel.positionValue == 0
     }
 
     fun play(position: Int) {
         if (position > -1 && position < viewModel.groupModel.getAllList()!!.size()) {
-            val prevGroup = viewModel.groupModel.positionValue
             val tvModel = viewModel.groupModel.getPosition(position)
 
             tvModel?.setReady()
             viewModel.groupModel.setPlaying()
             viewModel.groupModel.getCurrentList()?.setPlaying()
-
-            val currentGroup = viewModel.groupModel.positionValue
-            if (currentGroup != prevGroup) {
-                menuFragment.updateList(currentGroup)
-            }
         } else {
             R.string.channel_not_exist.showToast()
         }
     }
 
     fun prev() {
-        val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
             if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getFavoritesList() != null
             ) {
@@ -486,15 +449,9 @@ class MainActivity : AppCompatActivity() {
         tvModel?.setReady()
         viewModel.groupModel.setPlaying()
         viewModel.groupModel.getCurrentList()?.setPlaying()
-
-        val currentGroup = viewModel.groupModel.positionValue
-        if (currentGroup != prevGroup) {
-            menuFragment.updateList(currentGroup)
-        }
     }
 
     fun next() {
-        val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
             if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getFavoritesList() != null
             ) {
@@ -506,11 +463,6 @@ class MainActivity : AppCompatActivity() {
         tvModel?.setReady()
         viewModel.groupModel.setPlaying()
         viewModel.groupModel.getCurrentList()?.setPlaying()
-
-        val currentGroup = viewModel.groupModel.positionValue
-        if (currentGroup != prevGroup) {
-            menuFragment.updateList(currentGroup)
-        }
     }
 
     private fun showFragment(fragment: Fragment) {
@@ -531,19 +483,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .hide(fragment)
             .commitNow()
-    }
-
-    fun menuActive() {
-        handler.removeCallbacks(hideMenu)
-        handler.postDelayed(hideMenu, delayHideMenu)
-    }
-
-    private val hideMenu = Runnable {
-        if (!isFinishing && !supportFragmentManager.isStateSaved) {
-            if (!menuFragment.isHidden) {
-                supportFragmentManager.beginTransaction().hide(menuFragment).commit()
-            }
-        }
     }
 
     fun settingActive() {
@@ -575,10 +514,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showChannel(channel: String) {
-        if (!menuFragment.isHidden) {
-            return
-        }
-
         if (settingFragment.isVisible) {
             return
         }
@@ -591,7 +526,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun channelUp() {
-        if (menuFragment.isHidden && settingFragment.isHidden) {
+        if (settingFragment.isHidden) {
             if (SP.channelReversal) {
                 next()
                 return
@@ -601,7 +536,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun channelDown() {
-        if (menuFragment.isHidden && settingFragment.isHidden) {
+        if (settingFragment.isHidden) {
             if (SP.channelReversal) {
                 prev()
                 return
@@ -611,11 +546,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun back() {
-        if (!menuFragment.isHidden) {
-            hideMenuFragment()
-            return
-        }
-
         if (!settingFragment.isHidden) {
             hideSettingFragment()
             return
@@ -635,20 +565,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSetting() {
-        if (!menuFragment.isHidden) {
-            return
-        }
-
         supportFragmentManager.beginTransaction()
             .show(settingFragment)
             .commit()
         settingActive()
-    }
-
-    fun hideMenuFragment() {
-        supportFragmentManager.beginTransaction()
-            .hide(menuFragment)
-            .commit()
     }
 
     private fun hideSettingFragment() {
@@ -746,14 +666,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
 
-            KeyEvent.KEYCODE_ENTER -> {
-                showFragment(menuFragment)
-            }
-
-            KeyEvent.KEYCODE_DPAD_CENTER -> {
-                showFragment(menuFragment)
-            }
-
             KeyEvent.KEYCODE_DPAD_UP -> {
                 channelUp()
             }
@@ -768,12 +680,6 @@ class MainActivity : AppCompatActivity() {
 
             KeyEvent.KEYCODE_CHANNEL_DOWN -> {
                 channelDown()
-            }
-
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (settingFragment.isHidden) {
-                    showFragment(menuFragment)
-                }
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {

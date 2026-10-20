@@ -88,17 +88,6 @@ class SettingFragment : Fragment() {
             mainActivity.settingActive()
         }
 
-        val switchShowAllChannels = _binding?.switchShowAllChannels
-        switchShowAllChannels?.isChecked = SP.showAllChannels
-
-        val switchCompactMenu = _binding?.switchCompactMenu
-        switchCompactMenu?.isChecked = SP.compactMenu
-        switchCompactMenu?.setOnCheckedChangeListener { _, isChecked ->
-            SP.compactMenu = isChecked
-            mainActivity.updateMenuSize()
-            mainActivity.settingActive()
-        }
-
         val switchDisplaySeconds = _binding?.switchDisplaySeconds
         switchDisplaySeconds?.isChecked = SP.displaySeconds
 
@@ -197,8 +186,6 @@ class SettingFragment : Fragment() {
             binding.switchRepeatInfo,
             binding.switchConfigAutoLoad,
             binding.switchDefaultLike,
-            binding.switchShowAllChannels,
-            binding.switchCompactMenu,
             binding.switchDisplaySeconds,
         )) {
             i.textSize = textSizeSwitch
@@ -228,18 +215,10 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val context = requireActivity()
-        val mainActivity = (activity as MainActivity)
         viewModel = ViewModelProvider(context)[MainViewModel::class.java]
 
         binding.switchDisplaySeconds.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setDisplaySeconds(isChecked)
-        }
-
-        binding.switchShowAllChannels.setOnCheckedChangeListener { _, isChecked ->
-            SP.showAllChannels = isChecked
-            viewModel.groupModel.tvGroup.value?.let { viewModel.groupModel.setTVListModelList(it) }
-            mainActivity.update()
-            mainActivity.settingActive()
         }
     }
 

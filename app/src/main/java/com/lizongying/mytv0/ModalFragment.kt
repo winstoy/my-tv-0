@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,9 +19,6 @@ class ModalFragment : DialogFragment() {
 
     private var _binding: ModalBinding? = null
     private val binding get() = _binding!!
-
-    private val handler = Handler(Looper.myLooper()!!)
-    private val delayHideAppreciateModal = 10000L
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -78,8 +73,6 @@ class ModalFragment : DialogFragment() {
                 .load(arguments?.getInt(KEY_DRAWABLE_ID))
                 .into(binding.modalImage)
         }
-
-        handler.postDelayed(hideAppreciateModal, delayHideAppreciateModal)
     }
 
     private fun getModalSize(): Int {
@@ -88,16 +81,9 @@ class ModalFragment : DialogFragment() {
             .coerceIn(Utils.dpToPx(160), Utils.dpToPx(260))
     }
 
-    private val hideAppreciateModal = Runnable {
-        if (!this.isHidden) {
-            this.dismiss()
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        handler.removeCallbacksAndMessages(null)
     }
 
     companion object {

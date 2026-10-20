@@ -98,10 +98,6 @@ adb install my-tv-0.apk
 * 当list为空，显示group
 * 默认频道菜单显示
 
-## 赞赏
-
-![image](./screenshots/appreciate.jpeg)
-
 ## 感谢
 
 [live](https://github.com/fanmingming/live)
